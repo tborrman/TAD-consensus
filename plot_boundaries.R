@@ -116,7 +116,29 @@ for (i in 1:nrow(hic_df)){
 
 hic_df <- cbind(hic_df, cons_start, cons_end)
 hic_df <- add_colors(hic_df)
-write.table(hic_df, paste("plot_boundaries_table_", args$c, ".txt", sep=""), 
-	sep="\t", col.names=TRUE, quote=FALSE, row.names=FALSE )
 
 
+# write.table(hic_df, paste("plot_boundaries_table_", args$c, ".txt", sep=""), 
+# 	sep="\t", col.names=TRUE, quote=FALSE, row.names=FALSE )
+
+# hic_df <- read.table(paste("plot_boundaries_table_", args$c, ".txt", sep=""), 
+# 	sep="\t", header=TRUE, comment.char="")
+
+# Plot
+options(scipen=100)
+Mb <- 1000000
+png(paste("plot_boundaries/plot_boundaries_", args$c, ".png", sep=""), height=1700, width=5000, res= 300)
+par(mar=c(5, 6, 4, 2) + 0.1)
+cells <- levels(hic_df$cell)
+cell_df <- hic_df[hic_df$cell == cells[1],]
+plot(cell_df$TADstart / Mb, rep(1, nrow(cell_df)), col= as.character(cell_df$cons_start_color), pch= "|", 
+	xlab= "bp (Mb)" , ylim= c(0,21), main= args$c, yaxt= "n", ylab="")
+axis(2, at=1:20, labels=cells, las=2) 
+points(cell_df$TADend / Mb, rep(1, nrow(cell_df)), col= as.character(cell_df$cons_end_color), pch= "|")
+
+for (i in 2:length(cells)) {
+	cell_df <- hic_df[hic_df$cell == cells[i],]
+	points(cell_df$TADstart / Mb, rep(i, nrow(cell_df)), col= as.character(cell_df$cons_start_color), pch= "|")
+	points(cell_df$TADend / Mb, rep(i, nrow(cell_df)), col= as.character(cell_df$cons_end_color), pch= "|")
+}
+dev.off()

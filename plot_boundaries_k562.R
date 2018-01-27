@@ -132,12 +132,13 @@ K562_df$TADstart <- K562_df$TADstart - 1
 # Plot
 options(scipen=100)
 Mb <- 1000000
-png(paste("plot_boundaries_k562/plot_boundaries_", args$c, ".png", sep=""), height=1700, width=5000, res= 300)
+pdf(paste("plot_boundaries_k562/plot_boundaries_", args$c, ".pdf", sep=""), height=6, width=22)
 par(mar=c(5, 6, 4, 2) + 0.1)
 cells <- levels(hic_df$cell)
 cell_df <- hic_df[hic_df$cell == cells[1],]
 plot(cell_df$TADstart / Mb, rep(1, nrow(cell_df)), col= as.character(cell_df$cons_start_color), pch= "|", 
-	xlab= "bp (Mb)" , ylim= c(0,21), main= args$c, yaxt= "n", ylab="")
+	xlab= "bp (Mb)" , ylim= c(0,21), main= paste("Chromosome ", strsplit(args$c, "chr")[[1]][2], sep=""),
+	yaxt= "n", ylab="", cex.lab=1.5, cex.main=1.5)
 axis(2, at=1:21, labels=c(cells, "K562"), las=2) 
 points(cell_df$TADend / Mb, rep(1, nrow(cell_df)), col= as.character(cell_df$cons_end_color), pch= "|")
 
@@ -149,3 +150,24 @@ for (i in 2:length(cells)) {
 points(K562_df$TADstart / Mb, rep(length(cells) + 1, nrow(K562_df)),col="black", pch="|")
 points(K562_df$TADend / Mb, rep(length(cells) + 1, nrow(K562_df)),col="black", pch="|")
 dev.off()
+
+#Legend
+pdf("plot_boundaries_k562/plot_boundaries_legend_conservation.pdf", height=4, width=4)
+plot(1:10, rep(1,10), col="white",xlab="", ylab="", yaxt="n", xaxt="n", bty="n")
+# P: steelblue1
+# R1 : cyan
+# R2 : dodgerblue
+# R1_R2: mediumorchid2
+# P_R1: purple
+# P_R2: magenta2
+# P_R1_R2: red
+legend("center", c("Pool", "Rep1", "Rep2", "Rep1 Rep2", "Pool Rep1", "Pool Rep2",
+                   "Pool Rep1 Rep2"), fill= c("steelblue1", "cyan", "dodgerblue", "mediumorchid2",
+                  "purple", "magenta2", "red"), title="Conservation")
+dev.off()
+#Legend
+pdf("plot_boundaries_k562/plot_boundaries_legend_k562.pdf", height=4, width=4)
+plot(1:10, rep(1,10), col="white",xlab="", ylab="", yaxt="n", xaxt="n", bty="n")
+legend("center", "K562", fill="black", title="Deep Seq")
+dev.off()
+
